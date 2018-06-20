@@ -1,16 +1,17 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var mongoose = require('mongoose');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const mongoose = require('mongoose');
+const session = require('express-session');
 
 mongoose.Promise = global.Promise;
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var measurements = require('./routes/measurement');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const measurements = require('./routes/measurement');
 
-var app = express();
+const app = express();
 
 mongoose.connect('mongodb://localhost:27017/diplomaDB')
     .then(() =>  console.log('connection succesful'))

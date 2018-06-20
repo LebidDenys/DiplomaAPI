@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-var MeasurementSchema = new mongoose.Schema({
+const MeasurementSchema = new mongoose.Schema({
     lat: Number,
     lng: Number,
     year: Number,

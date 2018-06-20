@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var Measurement = require('../models/Measurement');
+const express = require('express');
+const router = express.Router();
+const Measurement = require('../models/Measurement');
 
 router.get('/', function(req, res, next) {
     Measurement.find(function (err, products) {

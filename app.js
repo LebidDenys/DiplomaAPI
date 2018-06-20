@@ -4,53 +4,12 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
-const uuid = require('uuid/v4');
-const bcrypt = require('bcrypt-nodejs');
 const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
-const bodyParser = require('body-parser');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const User = require('./models/User');
 
 mongoose.Promise = global.Promise;
-const userRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 const measurements = require('./routes/measurement');
-
-// configure passport.js to use the local strategy
-passport.use(new LocalStrategy(
-    { usernameField: 'email' },
-    (email, password, done) => {
-        User.find({ email })
-            .then(res => {
-                const user = res[0]
-                if (!user) {
-                    return done(null, false, { message: 'Invalid credentials.\n' });
-                }
-                if (!bcrypt.compareSync(password, user.password)) {
-                    return done(null, false, { message: 'Invalid credentials.\n' });
-                }
-                console.log('Local strategy returned true')
-                return done(null, user);
-            })
-            .catch(error => done(error));
-    }
-));
-
-
-
-// tell passport how to serialize the user
-passport.serializeUser((user, done) => {
-    console.log('Inside serializeUser callback. User id is save to the session file store here', user._id)
-    done(null, user._id);
-});
-passport.deserializeUser((id, done) => {
-    console.log('Inside deserializeUser callback')
-    console.log(`The user id passport saved in the session file store is: ${id}`)
-    User.findById(id)
-        .then(res => done(null, res) )
-        .catch(error => done(error, false) )
-});
 
 const app = express();
 
@@ -66,39 +25,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(session({
-    genid: (req) => {
-        return uuid() // use UUIDs for session IDs
-    },
-    store: new MongoStore({ mongooseConnection: mongoose.connection }),
-    secret: 's3Cur3',
-    resave: false,
-    saveUninitialized: true
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-app.get('/', (req, res) => {
-    res.send(`You hit home page!\n`)
-});
-
-app.use('/user', userRouter);
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 app.use('/measurements', measurements);
-app.get('/authrequired', (req, res) => {
-    if(req.isAuthenticated()) {
-        res.send('you hit the authentication endpoint\n')
-    } else {
-        console.log(req.isAuthenticated())
-        res.redirect('/')
-    }
-})
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

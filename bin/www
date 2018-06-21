@@ -6,9 +6,10 @@
 
 var app = require('../app');
 var debug = require('debug')('diplomaapi:server');
-var path = require('path');
-var fs = require('fs');
-var https = require('https');
+var path = require('path')
+var http = require('http');
+var fs = require('fs')
+var https = require('https')
 
 var certOptions = {
     key: fs.readFileSync(path.resolve('../diplomaApi/cert/server.key')),
@@ -27,7 +28,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = https.createServer(certOptions, app);
+var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.

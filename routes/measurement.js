@@ -24,10 +24,12 @@ router.post('/', function(req, res, next) {
 });
 
 router.put('/:id', function(req, res, next) {
-    Measurement.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
+    Measurement.findByIdAndUpdate(req.params.id, req.body, {new: true}, function (err, post) {
         if (err) return next(err);
+        console.log(post)
         res.json(post);
     });
+    Measurement.findById({})
 });
 
 router.delete('/:id', function(req, res, next) {

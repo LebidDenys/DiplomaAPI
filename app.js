@@ -13,7 +13,9 @@ const LocalStrategy = require('passport-local').Strategy;
 mongoose.Promise = global.Promise;
 const usersRouter = require('./routes/user');
 const measurements = require('./routes/measurement');
+const points = require('./routes/points');
 const User = require('./models/user');
+const bcrypt = require('bcrypt-nodejs');
 
 
 passport.use(new LocalStrategy(
@@ -25,7 +27,7 @@ passport.use(new LocalStrategy(
                 if (!user) {
                     return done(null, false, { message: 'Invalid credentials.\n' });
                 }
-                if (password !== user.password) {
+                if (!bcrypt.compareSync(password, user.password)){
                     return done(null, false, { message: 'Invalid credentials.\n' });
                 }
                 return done(null, user);
@@ -80,6 +82,7 @@ app.get('/', (req, res) => {
 })
 app.use('/user', usersRouter);
 app.use('/measurements', measurements);
+app.use('/points', points);
 
 app.get('/authrequired', (req, res) => {
     if(req.isAuthenticated()) {

@@ -1,35 +1,42 @@
 const express = require('express');
 const router = express.Router();
-const Measurement = require('../models/Measurement');
+const Point = require('../models/Points');
 
 router.get('/', function(req, res, next) {
-    Measurement.find(function (err, measurements) {
+    Point.find(function (err, points) {
         if (err) return next(err);
-        res.json(measurements);
+        res.json(points);
     });
 });
 
 router.get('/:id', function(req, res, next) {
-    Measurement.findById(req.params.id, function (err, post) {
+    Point.findById(req.params.id, function (err, post) {
         if (err) return next(err);
         res.json(post);
     });
 });
 
 router.post('/', function(req, res, next) {
-    if (req.isAuthenticated()){
-        Measurement.create(req.body, function (err, post) {
-            if (err) return next(err);
-            res.json(post);
-        });
-    } else {
-        res.send('You have not permission');
-    }
+    Point.create(req.body, function (err, post) {
+        if (err) {
+            console.log(err)
+            return next(err);
+        }
+        res.json(post);
+    });
+    // if (req.isAuthenticated()){
+    //     Points.create(req.body, function (err, post) {
+    //         if (err) return next(err);
+    //         res.json(post);
+    //     });
+    // } else {
+    //     res.send('You have not permission');
+    // }
 });
 
 router.put('/:id', function(req, res, next) {
     if (req.isAuthenticated()) {
-        Measurement.findByIdAndUpdate(req.params.id, req.body, {new: true}, function (err, post) {
+        Point.findByIdAndUpdate(req.params.id, req.body, {new: true}, function (err, post) {
             if (err) return next(err);
             console.log(post)
             res.json(post);
@@ -41,7 +48,7 @@ router.put('/:id', function(req, res, next) {
 
 router.delete('/:id', function(req, res, next) {
     if (req.isAuthenticated()) {
-        Measurement.findByIdAndRemove(req.params.id, req.body, function (err, post) {
+        Point.findByIdAndRemove(req.params.id, req.body, function (err, post) {
             if (err) return next(err);
             res.json(post);
         });

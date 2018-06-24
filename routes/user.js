@@ -26,19 +26,21 @@ router.post('/logout', (req, res, next) => {
 
 
 router.post('/signup', (req, res, next) => {
-    if (req.body.email &&
-        req.body.password) {
+    if(req.isAuthenticated() && req.body.email && req.body.password) {
         const userData = {
             email: req.body.email,
             password: req.body.password,
-        }
+        };
         User.create(userData, function (err, user) {
             if (err) {
+                console.log(err)
                 return next(err)
             } else {
-                return res.redirect('/user/admin');
+                return res.json(user);
             }
         });
+    } else {
+        res.send('You have not permission')
     }
 });
 

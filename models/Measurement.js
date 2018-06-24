@@ -1,10 +1,18 @@
 const mongoose = require('mongoose');
 
 const MeasurementSchema = new mongoose.Schema({
-    lat: Number,
-    lng: Number,
-    year: Number,
-    month: String,
+    point: {
+        type: String,
+        ref: 'Point',
+    },
+    year: {
+        type: Number,
+        default: 2007,
+    },
+    month: {
+        type: String,
+        required: true,
+    },
     plumbum: Number,
     cadmium: Number,
     zinc: Number,

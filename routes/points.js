@@ -24,37 +24,21 @@ router.post('/', function(req, res, next) {
         }
         res.json(post);
     });
-    // if (req.isAuthenticated()){
-    //     Points.create(req.body, function (err, post) {
-    //         if (err) return next(err);
-    //         res.json(post);
-    //     });
-    // } else {
-    //     res.send('You have not permission');
-    // }
 });
 
 router.put('/:id', function(req, res, next) {
-    if (req.isAuthenticated()) {
-        Point.findByIdAndUpdate(req.params.id, req.body, {new: true}, function (err, post) {
-            if (err) return next(err);
-            console.log(post)
-            res.json(post);
-        });
-    } else {
-        res.send('You have not permission');
-    }
+    Point.findByIdAndUpdate(req.params.id, req.body, {new: true}, function (err, post) {
+        if (err) return next(err);
+        console.log(post)
+        res.json(post);
+    });
 });
 
 router.delete('/:id', function(req, res, next) {
-    if (req.isAuthenticated()) {
-        Point.findByIdAndRemove(req.params.id, req.body, function (err, post) {
-            if (err) return next(err);
-            res.json(post);
-        });
-    } else {
-        res.send('You have not permission');
-    }
+    Point.findByIdAndRemove(req.params.id, req.body, function (err, post) {
+        if (err) return next(err);
+        res.json(post);
+    });
 });
 
 module.exports = router;

@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const ObjectId = require('mongoose').Types.ObjectId;
+const cors = require('cors');
 const uuid = require('uuid/v4')
 const session = require('express-session')
 const MongoStore = require('connect-mongo')(session);
@@ -17,6 +18,27 @@ const points = require('./routes/points');
 const User = require('./models/user');
 const bcrypt = require('bcrypt-nodejs');
 
+const app = express();
+
+mongoose.connect('mongodb://localhost:27017/diplomaDB')
+    .then(() =>  console.log('connection succesful'))
+    .catch((err) => console.error(err));
+
+app.use(session({
+    genid: (req) => {
+        return uuid() // use UUIDs for session IDs
+    },
+    secret: 's3cr3t',
+    resave: false,
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
+
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:3001'
+}));
 
 passport.use(new LocalStrategy(
     { usernameField: 'email' },
@@ -36,7 +58,6 @@ passport.use(new LocalStrategy(
     }
 ));
 
-
 passport.serializeUser((user, done) => {
     done(null, user._id);
 });
@@ -49,23 +70,10 @@ passport.deserializeUser((id, done) => {
 });
 
 
-const app = express();
 
-mongoose.connect('mongodb://localhost:27017/diplomaDB')
-    .then(() =>  console.log('connection succesful'))
-    .catch((err) => console.error(err));
-
-app.use(session({
-    genid: (req) => {
-        return uuid() // use UUIDs for session IDs
-    },
-    secret: 's3cr3t',
-    resave: false,
-    store: new MongoStore({ mongooseConnection: mongoose.connection }),
-    saveUninitialized: true
-}))
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

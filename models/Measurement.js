@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const MeasurementSchema = new mongoose.Schema({
     point: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Point',
     },
     year: {
@@ -13,14 +13,14 @@ const MeasurementSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    plumbum: Number,
     cadmium: Number,
-    zinc: Number,
-    copper: Number,
-    chrome: Number,
-    nikel: Number,
     iron: Number,
     manganese: Number,
+    copper: Number,
+    nikel: Number,
+    plumbum: Number,
+    chrome: Number,
+    zinc: Number,
     updated_at: { type: Date, default: Date.now }
 });
 

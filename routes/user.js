@@ -10,10 +10,12 @@ router.get('/login', (req, res) => {
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if(info) { return res.send(info.message) }
-        if (err) { return next(err); }
+        if (err) {
+            console.log(err);
+            return next(err); }
         if (!user) { return res.redirect('/login'); }
         req.login(user, (err) => {
-            if (err) { return next(err); }
+            if (err) { console.log(err); return next(err); }
             return res.send(user);
         })
     })(req, res, next);
@@ -26,7 +28,7 @@ router.post('/logout', (req, res, next) => {
 
 
 router.post('/signup', (req, res, next) => {
-    if(req.isAuthenticated() && req.body.email && req.body.password) {
+    if(req.body.email && req.body.password) {
         const userData = {
             email: req.body.email,
             password: req.body.password,

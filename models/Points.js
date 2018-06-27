@@ -21,3 +21,5 @@ const PointsSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Point', PointsSchema);
+
+

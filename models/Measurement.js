@@ -4,10 +4,11 @@ const MeasurementSchema = new mongoose.Schema({
     point: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Point',
+        required: true,
     },
     year: {
         type: Number,
-        default: 2007,
+        default: (new Date()).getFullYear(),
     },
     month: {
         type: String,

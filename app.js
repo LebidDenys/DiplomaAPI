@@ -18,15 +18,19 @@ const points = require('./routes/points');
 const User = require('./models/user');
 const bcrypt = require('bcrypt-nodejs');
 
+const dbHost = 'mongodb://localhost:27017/diplomaDB';
+const frontEndHost = 'http://localhost:3001';
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/diplomaDB')
-    .then(() =>  console.log('connection succesful'))
+app.use(cookieParser());
+
+mongoose.connect(dbHost)
+    .then(() =>  console.log('connection successful'))
     .catch((err) => console.error(err));
 
 app.use(session({
     genid: (req) => {
-        return uuid() // use UUIDs for session IDs
+        return uuid();
     },
     secret: 's3cr3t',
     resave: false,
@@ -35,10 +39,14 @@ app.use(session({
     cookie: { secure: false }
 }));
 
+
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:3001'
+    origin: frontEndHost
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 passport.use(new LocalStrategy(
     { usernameField: 'email' },
@@ -69,12 +77,6 @@ passport.deserializeUser((id, done) => {
         .catch(error => done(error, false))
 });
 
-
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -82,23 +84,16 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
     res.send(`You hit home page!\n`)
-})
+});
+
 app.use('/user', usersRouter);
 app.use('/measurements', measurements);
 app.use('/points', points);
-
-app.get('/authrequired', (req, res) => {
-    if(req.isAuthenticated()) {
-        res.send('you hit the authentication endpoint\n')
-    } else {
-        res.redirect('/')
-    }
-})
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

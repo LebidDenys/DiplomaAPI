@@ -1,15 +1,21 @@
 const express = require('express');
+const logger = require('morgan');
 const router = express.Router();
 const Measurement = require('../models/Measurement');
 
 router.get('/', function(req, res, next) {
-    Measurement
-        .find()
-        .populate('point')
-        .exec(function (err, measurements) {
-            if (err) return next(err);
-            res.json(measurements);
-        });
+    try {
+        Measurement
+            .find()
+            .populate('point')
+            .exec(function (err, measurements) {
+                if (err) { return next(err); }
+                res.json(measurements);
+            });
+    } catch(err) {
+        logger.error(err);
+    }
+
 });
 
 router.get('/:id', function(req, res, next) {
